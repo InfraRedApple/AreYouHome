@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+
+    <!--Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!--FontAwesome-->
+    <link rel="stylesheet" href="fontawesome/css/all.css">
+    {% block customcss %}{% endblock %}
+</head>
+<body>
+
+<!-- A grey horizontal navbar that becomes vertical on small screens -->
+<nav class="navbar navbar-dark navbar-expand-sm bg-dark">
+
+    <!-- Links -->
+    <ul class="navbar-nav">
+
+        <!--<a class="navbar-brand" href="/">-->
+            <!--<img src="/imgs/logo.png" class="img-fluid" alt="Logo" style="width: 250px;">-->
+        <!--</a>-->
+
+        <li><a href="/">Home</a></li>
+        {% if current_user %}
+        <li class="nav-item"><a class="nav-link" href="/profile/show">Profile</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">Log out</a></li>
+        {% endif %}
+    </ul>
+
+</nav>
+
+{% for message in flash_messages %}
+<div class="container">
+    <div class="my-2 alert alert-{{ message.type }} border border-{{ message.type }} alert-dismissible fade show {% if message.autoclose %} autoclose {%endif%}" role="alert">
+        {{ message.body }}
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+</div>
+{% endfor %}
+
+	<div class="container-fluid">
+        {% block body %}{% endblock %}
+    </div>
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <!-- jQuery UI library -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"  integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+    <!-- AutoClose Alerts -->
+    <script>
+
+        window.setTimeout(function() {
+            $(".autoclose").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove();
+            });
+        }, 4000);
+
+    </script>
+
+
+
+{% block footer %}{% endblock %}
+</body>
+</html>

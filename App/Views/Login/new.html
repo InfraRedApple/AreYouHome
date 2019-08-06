@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block body %}
+{% if activate %}
+<div class="alert alert-warning border border-warning border rounded p-3 mb-3">
+    <h4>Account Activation Required</h4>
+    <p>You need to confirm your email before continuing. <strong>We just re-sent it to {{ email }} as convenience.</strong></p>
+    <p>Haven't seen your activation email? Check your spam folder for an email from account@workinchattanooga.com</p>
+</div>
+{% endif %}
+
+<div class="bg-white border rounded p-3">
+    <h1>Log in</h1>
+
+    <form action="/login/create" method="post">
+
+        <div class="form-group">
+            <label for="inputEmail">Email address</label>
+            <input type="email" id="inputEmail" name="email" placeholder="Email address" autofocus value="{{ email }}" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label for="inputPassword">Password</label>
+            <input type="password" id="inputPassword" name="password" placeholder="Password" class="form-control" />
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="remember_me" {% if remember_me %} checked="checked" {% endif %} /> Remember me
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-default">Log in</button>
+        <a href="/password/forgot">Forgot password?</a>
+
+    </form>
+</div>
+{% endblock %}
