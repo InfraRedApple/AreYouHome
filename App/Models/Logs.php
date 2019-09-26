@@ -2,15 +2,15 @@
 	
 	namespace App\Models;
 	
-	use App\Config;
+	use Core\Model;
 	use PDO;
 	
 	/**
-	 * LastLogin model
+	 * Logs model
 	 *
 	 * PHP version 7.0
 	 */
-	class LastLogin extends \Core\Model
+	class Logs extends Model
 	{
 		
 		/**
@@ -36,15 +36,15 @@
 		
 		
 		/**
-		 * Find a last login model by user ID
+		 * Find a model by ID
 		 *
-		 * @param string $id The user ID
+		 * @param string $id The model ID
 		 *
-		 * @return mixed User object if found, false otherwise
+		 * @return mixed model object if found, false otherwise
 		 */
 		public static function findByID($id)
 		{
-			$sql = 'SELECT * FROM last_login WHERE user_id = :id ORDER BY id DESC LIMIT 1';
+			$sql = 'SELECT * FROM logs WHERE id = :id ORDER BY id DESC LIMIT 1';
 			
 			$db = static::getDB();
 			$stmt = $db->prepare($sql);
@@ -57,7 +57,6 @@
 			return $stmt->fetch();
 		}
 		
-		
 		/**
 		 * Gets all the users login activity
 		 *
@@ -65,9 +64,9 @@
 		 *
 		 * @return array  if the data found, false otherwise
 		 */
-		public static function findAllForId($id)
+		public static function findAllForClientId($id)
 		{
-			$sql = 'SELECT * FROM last_login WHERE user_id = :id ORDER BY last_time DESC LIMIT 10';
+			$sql = 'SELECT * FROM logs WHERE clients_id = :id ORDER BY last_seen DESC';
 			/**
 			 * @var $db \PDO
 			 */
@@ -79,22 +78,18 @@
 			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 		}
 		
-		public static function getLocation($ip)
+		public static function mostRecent($ip)
 		{
-			// Initialize CURL:
-			$ch = curl_init('http://api.ipstack.com/' . $ip . '?access_key=' . Config::IPSTACK_API_KEY . '');
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			$sql = 'SELECT DISTINCT clients_id FROM logs ORDER BY last_seen DESC';
+			/**
+			 * @var $db \PDO
+			 */
+			$db = static::getDB();
+			$stmt = $db->prepare($sql);
+
+			$stmt->execute();
 			
-			// Store the data:
-			$json = curl_exec($ch);
-			curl_close($ch);
-			
-			// Decode JSON response:
-			$api_result = json_decode($json, true);
-			
-			// Output the "capital" object inside "location"
-			return $api_result['city'] . ", " . $api_result['region_code'] . " " . $api_result['country_code'];
-			
+			return $stmt->fetchAll(PDO::FETCH_ASSOC);
 		}
 		
 		/**
@@ -105,16 +100,16 @@
 		public function save()
 		{
 			
-			$sql = 'INSERT INTO last_login (user_id, browser,location,ip_address)
-                    		VALUES (:user_id, :browser, :location,  :ip_address)';
+			$sql = 'INSERT INTO logs (clients_id)
+                    		VALUES (:clients_id)';
 			
+			/**
+			 * @var $db \PDO
+			 */
 			$db = static::getDB();
 			$stmt = $db->prepare($sql);
 			
-			$stmt->bindValue(':user_id', $this->user_id, PDO::PARAM_STR);
-			$stmt->bindValue(':browser', $this->browser, PDO::PARAM_STR);
-			$stmt->bindValue(':location', $this->location, PDO::PARAM_STR);
-			$stmt->bindValue(':ip_address', $this->ip_address, PDO::PARAM_STR);
+			$stmt->bindValue(':clients_id', $this->clients_id, PDO::PARAM_STR);
 			
 			return $stmt->execute();
 			
